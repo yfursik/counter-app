@@ -17,6 +17,8 @@
       <div class="summary">
         <p>Počet záznamů: {{ counterService.counters().length }}</p>
         <p>Součet hodnot: {{ total() }}</p>
+        <p>Minimální hodnota: {{ extremes().min }}</p>
+        <p>Maximální hodnota: {{ extremes().max }}</p>
       </div>
       <ion-button color="danger" fill="outline" size="small" (click)="clear()">
         Vymazat vše

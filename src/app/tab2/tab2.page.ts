@@ -56,6 +56,14 @@ export class Tab2Page implements OnInit {
       .reduce((sum, counter) => sum + counter.value, 0),
   );
 
+  readonly extremes = computed(() => {
+    const values = this.counterService.counters().map((counter) => counter.value);
+    if (values.length === 0) {
+      return { min: 0, max: 0 };
+    }
+    return { min: Math.min(...values), max: Math.max(...values) };
+  });
+
   readonly visibleCounters = computed(() => {
     const term = this.searchTerm().trim().toLocaleLowerCase('cs');
     const items = this.counterService
