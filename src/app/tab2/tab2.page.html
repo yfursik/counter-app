@@ -23,27 +23,45 @@
       </ion-button>
     </div>
 
-    <ion-list>
-      @for (counter of counterService.counters(); track counter.id) {
-        <ion-item>
-          <ion-label>
-            <h2>{{ counter.name }}</h2>
-            <p>{{ counter.createdAt | date: 'd. M. y, HH:mm' }}</p>
-          </ion-label>
+    <div class="controls">
+      <ion-searchbar
+        placeholder="Hledat podle názvu"
+        [debounce]="200"
+        (ionInput)="onSearch($event)"
+      ></ion-searchbar>
 
-          <ion-note slot="end">{{ counter.value }}</ion-note>
+      <ion-segment [value]="sortMode()" (ionChange)="onSortChange($event)">
+        <ion-segment-button value="newest">Nejnovější</ion-segment-button>
+        <ion-segment-button value="name">Název</ion-segment-button>
+        <ion-segment-button value="value">Hodnota</ion-segment-button>
+      </ion-segment>
+    </div>
 
-          <ion-button
-            slot="end"
-            color="danger"
-            fill="clear"
-            aria-label="Odstranit záznam"
-            (click)="remove(counter.id)"
-          >
-            Odstranit
-          </ion-button>
-        </ion-item>
-      }
-    </ion-list>
+    @if (visibleCounters().length === 0) {
+      <p class="state-message">Nic nebylo nalezeno.</p>
+    } @else {
+      <ion-list>
+        @for (counter of visibleCounters(); track counter.id) {
+          <ion-item>
+            <ion-label>
+              <h2>{{ counter.name }}</h2>
+              <p>{{ counter.createdAt | date: 'd. M. y, HH:mm' }}</p>
+            </ion-label>
+
+            <ion-note slot="end">{{ counter.value }}</ion-note>
+
+            <ion-button
+              slot="end"
+              color="danger"
+              fill="clear"
+              aria-label="Odstranit záznam"
+              (click)="remove(counter.id)"
+            >
+              Odstranit
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    }
   }
 </ion-content>
