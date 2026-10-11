@@ -1,37 +1,49 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { ToastController } from '@ionic/angular';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SavedCounter } from '../models/saved-counter';
+import { CounterService } from '../services/counter.service';
 import { Tab1Page } from './tab1.page';
 
 describe('Tab1Page', () => {
-  let component: Tab1Page;
-  let fixture: ComponentFixture<Tab1Page>;
+  const addMock = vi.fn();
+  const presentMock = vi.fn();
+  const createMock = vi.fn();
+
+  const counter: SavedCounter = {
+    id: 'first',
+    name: 'První',
+    value: 1,
+    createdAt: '2026-09-17T08:00:00.000Z',
+  };
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Tab1Page);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    vi.clearAllMocks();
+    addMock.mockResolvedValue(undefined);
+    presentMock.mockResolvedValue(undefined);
+    createMock.mockResolvedValue({ present: presentMock });
+
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: CounterService, useValue: { add: addMock } },
+        { provide: ToastController, useValue: { create: createMock } },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(Tab1Page);
+
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should add the newest saved counter to the beginning', () => {
-    const first: SavedCounter = {
-      id: 'first',
-      name: 'První',
-      value: 1,
-    };
-    const second: SavedCounter = {
-      id: 'second',
-      name: 'Druhé',
-      value: 2,
-    };
+  it('should pass the saved counter to the service and show a toast', async () => {
+    const fixture = TestBed.createComponent(Tab1Page);
 
-    component.onSaved(first);
-    component.onSaved(second);
+    await fixture.componentInstance.onSaved(counter);
 
-    expect(component.savedCounters).toEqual([second, first]);
+    expect(addMock).toHaveBeenCalledWith(counter);
+    expect(createMock).toHaveBeenCalledTimes(1);
+    expect(presentMock).toHaveBeenCalledTimes(1);
   });
 });
